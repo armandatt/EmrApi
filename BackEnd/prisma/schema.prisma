@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Disease {
+  id          String        @id @default(cuid())
+  icd11Code   String?       @unique
+  namasteCode String?       @unique
+  description String?
+  source      String        // "ICD-11" | "NAMASTE" | "Both"
+  verified    Boolean       @default(true)
+
+  names       DiseaseName[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DiseaseName {
+  id        String   @id @default(cuid())
+  name      String
+  language  String?  
+  diseaseId String
+  disease   Disease  @relation(fields: [diseaseId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+
+model PatientInput {
+  input_id    Int         @id @default(autoincrement())
+  name        String
+  age         Int?
+  description String
+  created_at  DateTime    @default(now())
+  codes       InputCode[]
+}
+
+model InputCode {
+  code_id     Int      @id @default(autoincrement())
+  input_id    Int
+  code        String
+  system      String   // "ICD-11" or "Namaste"
+  created_at  DateTime @default(now())
+
+  patientInput PatientInput @relation(fields: [input_id], references: [input_id], onDelete: Cascade)
+}
+
+

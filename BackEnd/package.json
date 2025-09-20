@@ -1,0 +1,22 @@
+{
+  "name": "emr-ayush-handler",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.1",
+    "@prisma/extension-accelerate": "^2.0.2",
+    "bcryptjs": "^3.0.2",
+    "hono": "^4.9.7",
+    "openai": "^5.21.0",
+    "prisma": "^6.16.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250913.0",
+    "@types/node": "^24.5.2",
+    "wrangler": "^4.4.0"
+  }
+}
