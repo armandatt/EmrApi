@@ -1,12 +1,12 @@
 import { Routes, Route } from "react-router-dom"
-import { Header } from "./components/Header"
+// import { Header } from "./components/Header"
 // import { Footer } from "@/components/Footer"
 import { GSAPProvider } from "@/components/GSAPProvider"
 import { TransitionProvider } from "@/components/TransitionProvider"
 import HomePage from "@/pages/HomePage"
 import ContactPage from "@/pages/Contact"
 import BlogPage from "@/pages/BlogPage"
-import { UserDashboardEmr } from './components/UserDashboardEmr';
+import { Dashboard} from './components/UserDashboardEmr';
 // import BlogPostPage from "./pages/BlogPostPage"
 import "./index.css"
 import PortfolioProjectPage from "@/pages/PortfolioProjectPage"
@@ -26,7 +26,7 @@ function App() {
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/blog" element={<BlogPage />} />
-              <Route path="/dashboard" element={<UserDashboardEmr />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               {/* <Route path="/blog/:slug" element={<BlogPostPage />} /> */}
               <Route path="/portfolio/:slug" element={<PortfolioProjectPage />} />
             </Routes>

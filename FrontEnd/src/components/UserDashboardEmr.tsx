@@ -1,131 +1,220 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FileText, Search, Plus, User, Calendar, Stethoscope, FileSearch } from 'lucide-react';
-import { EMRForm } from './EMRForm';
-import { PatientSearch } from './PatientSearch';
-import { PatientList } from './PatientList';
-import type { Patient } from '../types/medical';
+"use client";
 
-export function UserDashboardEmr() {
-  const [activeTab, setActiveTab] = useState<'emr' | 'search'>('emr');
-  const [patients, setPatients] = useState<Patient[]>([]);
+import { use, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Search,
+  Upload,
+  Book,
+  User,
+  Menu,
+  Bell,
+  LogOut,
+  Shield,
+} from "lucide-react";
 
-  const handlePatientAdded = (patient: Patient) => {
-    setPatients(prev => [patient, ...prev]);
-  };
+import { CodeSearch } from "../components/CodeSearch";
+import { IngestCSV } from "../components/IngestCSV";
+import { AuditTrail } from "../components/AuditTrial";
+import { APIDocs } from "../components/ApiDocs";
+import { BACKEND_URL } from "@/config";
+import { useNavigate } from "react-router-dom";
+
+type TabType = "code-search" | "ingest-csv" | "audit-trail" | "api-docs";
+
+export function Dashboard() {
+  const [activeTab, setActiveTab] = useState<TabType>("code-search");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [username, setUsername] = useState<string>("Loading...");
+
+  useEffect(() => {
+    // Fetch logged-in user details
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/v1/HandlingApi/me`, {
+          headers: {
+            Authorization: `${localStorage.getItem("token") || ""}`,
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUsername(data?.name || "Unknown User");
+        } else {
+          setUsername("Guest");
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch user", err);
+        setUsername("Guest");
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const Navigate = useNavigate();
+
+  const Logout = () => {
+    localStorage.removeItem("token");
+    Navigate("/sign-in");
+  }
 
   const tabs = [
     {
-      id: 'emr' as const,
-      label: 'EMR Records',
-      icon: FileText,
-      description: 'Create and manage patient records'
+      id: "code-search" as const,
+      label: "Code Search",
+      icon: Search,
+      description: "Terminology Code Search",
     },
     {
-      id: 'search' as const,
-      label: 'Search & Fetch',
-      icon: Search,
-      description: 'Find patient records by symptoms or ICD-11 codes'
-    }
+      id: "ingest-csv" as const,
+      label: "Ingest NAMASTE",
+      icon: Upload,
+      description: "CSV Data Import",
+    },
+    {
+      id: "audit-trail" as const,
+      label: "Version & Consent Demo",
+      icon: Shield,
+      description: "Audit Trail & Versioning",
+    },
+    {
+      id: "api-docs" as const,
+      label: "API Docs",
+      icon: Book,
+      description: "API Documentation",
+    },
   ];
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "code-search":
+        return <CodeSearch />;
+      case "ingest-csv":
+        return <IngestCSV />;
+      case "audit-trail":
+        return <AuditTrail />;
+      case "api-docs":
+        return <APIDocs />;
+      default:
+        return <CodeSearch />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-black/50 backdrop-blur-md">
-        <div className="container mx-auto px-6 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-950 flex">
+      {/* Sidebar */}
+      <motion.div
+        initial={{ x: -200 }}
+        animate={{ x: 0 }}
+        transition={{ duration: 0.4 }}
+        className={`bg-gray-900/90 backdrop-blur-md border-r border-gray-800 transition-all duration-300 ${
+          sidebarOpen ? "w-64" : "w-20"
+        }`}
+      >
+        {/* Logo */}
+        <div className="p-4 flex items-center gap-3">
+          <motion.div
+            animate={{ rotate: [0, 10, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 6 }}
+            className="w-10 h-10 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center font-extrabold text-white shadow-lg shadow-blue-500/40"
+          >
+            M
+          </motion.div>
+          {sidebarOpen && (
+            <div>
+              <h1 className="font-bold text-white text-lg tracking-wide">
+                Medi-Link
+              </h1>
+              <p className="text-xs text-gray-400">FHIR R4 Dashboard</p>
+            </div>
+          )}
+        </div>
+
+        {/* Tabs */}
+        <nav className="mt-8 space-y-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg transition-all ${
+                activeTab === tab.id
+                  ? "bg-gradient-to-r from-blue-600/30 to-purple-600/30 text-white shadow-inner"
+                  : "text-gray-400 hover:bg-gray-800 hover:text-white"
+              }`}
+            >
+              <tab.icon className="w-5 h-5" />
+              {sidebarOpen && (
+                <div>
+                  <div className="font-medium">{tab.label}</div>
+                  <div className="text-xs text-gray-500">
+                    {tab.description}
+                  </div>
+                </div>
+              )}
+            </button>
+          ))}
+        </nav>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 px-6 py-4 sticky top-0 z-20">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Stethoscope className="w-6 h-6 text-white" />
-              </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="p-2 hover:bg-gray-800 rounded-lg text-gray-400"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
-                  Medi-Link
+                <h1 className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  {tabs.find((tab) => tab.id === activeTab)?.label}
                 </h1>
-                <p className="text-sm text-gray-400">Medical Dashboard</p>
+                <p className="text-sm text-gray-400">
+                  {tabs.find((tab) => tab.id === activeTab)?.description}
+                </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-gray-300">
-                <User className="w-5 h-5" />
-                <span>Dr. Smith</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-400">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date().toLocaleDateString()}</span>
+
+            {/* Right side */}
+            <div className="flex items-center gap-5">
+              <button className="p-2 hover:bg-gray-800 rounded-lg relative text-gray-400">
+                <Bell className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              </button>
+              <div className="flex items-center gap-3 pl-4 border-l border-gray-800">
+                <div className="text-right">
+                  <div className="font-medium text-white">{username}</div>
+                  {/* Removed ABHA ID */}
+                </div>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-md"
+                >
+                  <User className="w-4 h-4 text-white" />
+                </motion.div>
+                <button onClick={Logout} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400">
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Navigation Tabs */}
-      <div className="container mx-auto px-6 py-6">
-        <div className="flex gap-4 mb-8">
-          {tabs.map((tab) => (
-            <motion.button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-3 px-6 py-4 rounded-xl transition-all duration-300 ${activeTab === tab.id
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                  : 'bg-gray-900/50 text-gray-300 hover:bg-gray-800/50 border border-gray-800'
-                }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <tab.icon className="w-5 h-5" />
-              <div className="text-left">
-                <div className="font-semibold">{tab.label}</div>
-                <div className="text-xs opacity-80">{tab.description}</div>
-              </div>
-            </motion.button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-8"
-        >
-          {activeTab === 'emr' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <Plus className="w-6 h-6 text-blue-400" />
-                  <h2 className="text-2xl font-bold">Create Patient Record</h2>
-                </div>
-                <EMRForm onPatientAdded={handlePatientAdded} />
-              </div>
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <FileSearch className="w-6 h-6 text-purple-400" />
-                  <h2 className="text-2xl font-bold">Recent Records</h2>
-                </div>
-                <PatientList patients={patients} />
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'search' && (
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <Search className="w-6 h-6 text-green-400" />
-                <h2 className="text-2xl font-bold">Search Patient Records</h2>
-              </div>
-              <PatientSearch />
-            </div>
-          )}
-          
-        </motion.div>
-        
+        {/* Content Area */}
+        <main className="flex-1 p-6 overflow-auto">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {renderContent()}
+          </motion.div>
+        </main>
       </div>
-      <footer className="border-t border-gray-800 py-6 text-center text-sm text-gray-400">
-            <p>© 2025 Medi-Link All rights reserved.</p>
-          </footer>
     </div>
   );
 }
+

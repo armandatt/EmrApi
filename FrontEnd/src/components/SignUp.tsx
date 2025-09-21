@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import { Header } from "./Header"
 import { BACKEND_URL } from "@/config"
 import axios from "axios"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+// import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 const SignUp = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -127,7 +127,7 @@ const SignUp = () => {
               <Separator className="flex-1 bg-gray-700" />
             </div>
 
-            <Button variant="outline" className="w-full border-gray-700 text-white hover:bg-[#1c1f2e]">
+            <Button variant="outline" className="w-full border-gray-700 text-black hover:bg-gray-200">
               <Github className="mr-2 h-4 w-4" />
               Sign up with GitHub
             </Button>

@@ -55,7 +55,7 @@ export function Header() {
             onClick={() => scrollToSection("blog")}
             className="hover:text-neutral-300 transition-colors"
           >
-            Blog
+            Insights
           </button>
           <a href="contact" className="hover:text-neutral-300 transition-colors">
             Contact
