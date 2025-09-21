@@ -5,12 +5,10 @@ import { motion } from "framer-motion";
 import {
   Book,
   Code,
-  Copy,
   Shield,
   Zap,
   Globe,
   CheckCircle,
-  AlertCircle,
 } from "lucide-react";
 
 interface APIEndpoint {

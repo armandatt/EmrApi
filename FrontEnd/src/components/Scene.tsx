@@ -92,7 +92,7 @@ export function Scene() {
   })
 
   // Initialize particle positions and textures
-  const { particles, originalPositionTexture, particlePositions } = useMemo(() => {
+  const {originalPositionTexture, particlePositions } = useMemo(() => {
     // Initialize particle positions
     const particles = new Float32Array(size * size * 4) // RGBA format
     const geometry = new THREE.TorusKnotGeometry(1.2, 0.3, 400, 32)

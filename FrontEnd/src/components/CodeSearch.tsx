@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Check } from "lucide-react";
 import { BACKEND_URL } from "@/config";

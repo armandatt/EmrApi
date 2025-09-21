@@ -3,14 +3,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Shield,
   Clock,
   User,
-  FileText,
   Activity,
   ChevronRight,
   Eye,
-  Download,
   Calendar,
   Search,
 } from "lucide-react";

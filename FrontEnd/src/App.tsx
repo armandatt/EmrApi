@@ -9,7 +9,7 @@ import BlogPage from "@/pages/BlogPage"
 import { Dashboard} from './components/UserDashboardEmr';
 // import BlogPostPage from "./pages/BlogPostPage"
 import "./index.css"
-import PortfolioProjectPage from "@/pages/PortfolioProjectPage"
+// import PortfolioProjectPage from "@/pages/PortfolioProjectPage"
 import SignIn from "./components/Signin"
 import SignUp from "./components/SignUp"
 
@@ -28,7 +28,7 @@ function App() {
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               {/* <Route path="/blog/:slug" element={<BlogPostPage />} /> */}
-              <Route path="/portfolio/:slug" element={<PortfolioProjectPage />} />
+              {/* <Route path="/portfolio/:slug" element={<PortfolioProjectPage />} /> */}
             </Routes>
           </main>
         </TransitionProvider>
