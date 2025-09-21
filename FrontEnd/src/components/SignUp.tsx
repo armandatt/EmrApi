@@ -34,7 +34,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, formData)
-      const jwt = response.data.jwt
+      const jwt = response.data.token
       if (!jwt) {
         alert("Signup failed: User Already Exist.")
         setIsLoading(false)
