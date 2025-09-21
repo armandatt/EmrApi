@@ -10,7 +10,7 @@
   "vars": {
 
     "DATABASE_URL" : "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqd3RfaWQiOjEsInNlY3VyZV9rZXkiOiJza194LUFGMXpndDdZYWhvdk9UcDVYYmciLCJhcGlfa2V5IjoiMDFLNTIyRVhORFBGTVozUVJNWlhURlpZSFoiLCJ0ZW5hbnRfaWQiOiIxMGZlZTg0YTA5MjlkZDJjMDA1YzZjY2MzNTU5YjVmNTVjYzJjOTMyYmIwNmQ0NTU4OWQ4ZGU1OWMyZDFlMDliIiwiaW50ZXJuYWxfc2VjcmV0IjoiN2FmMDIzMjktZDk2Yy00NmY4LWE3N2UtYzZjMzljMmFkYTE1In0.zspMJ4XLyKzuLUiVMN3i6LGfY9slO59cB4EfzaJU27U",
-    "JWT_SECRET" : "EmrApi1234"
+
   },
 
   // "kv_namespaces": [

@@ -13,10 +13,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 enum Role {
   USER
   ADMIN
+}
+
+enum Source {
+  ICD11
+  NAMASTE
+  BOTH
 }
 
 model User {
@@ -29,49 +34,81 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-
 model Disease {
-  id          String        @id @default(cuid())
-  icd11Code   String?       @unique
-  namasteCode String?       @unique
+  id          String          @id @default(cuid())
+  icd11Code   String?         @unique
+  namasteCode String?         @unique
   description String?
-  source      String        // "ICD-11" | "NAMASTE" | "Both"
-  verified    Boolean       @default(true)
+  source      Source
+  verified    Boolean         @default(true)
 
   names       DiseaseName[]
+  mappings    DiseaseMapping[]
+  version     Int      @default(1) 
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([icd11Code])
+  @@index([namasteCode])
 }
 
 model DiseaseName {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   name      String
-  language  String?  
+  language  String?
   diseaseId String
-  disease   Disease  @relation(fields: [diseaseId], references: [id])
+  disease   Disease @relation(fields: [diseaseId], references: [id])
 
   createdAt DateTime @default(now())
 }
 
+model DiseaseMapping {
+  id          String   @id @default(cuid())
+  diseaseId   String
+  icd11Code   String
+  description String?
+  priority    Int
+  validated   Boolean  @default(false)
 
-model PatientInput {
-  input_id    Int         @id @default(autoincrement())
-  name        String
-  age         Int?
-  description String
-  created_at  DateTime    @default(now())
-  codes       InputCode[]
+  disease     Disease @relation(fields: [diseaseId], references: [id])
+
+  createdAt   DateTime @default(now())
+}
+
+model Patient {
+  id         String   @id @default(cuid()) 
+  externalId String?  // optional hospital/external ID
+  givenName  String
+  gender     String
+  birthDate  DateTime
+  version   Int      @default(1)  // 🔹 version tracking
+
+  codes      InputCode[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model InputCode {
-  code_id     Int      @id @default(autoincrement())
-  input_id    Int
+  code_id     Int    @id @default(autoincrement())
   code        String
-  system      String   // "ICD-11" or "Namaste"
-  created_at  DateTime @default(now())
+  system      String // "ICD-11" or "Namaste"
+  priority    Int?
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
-  patientInput PatientInput @relation(fields: [input_id], references: [input_id], onDelete: Cascade)
+  patientId   String
+  patient     Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
 }
 
-
+model AuditEvent {
+  id        String   @id @default(cuid())
+  action    String   // CREATE | UPDATE | DELETE
+  resource  String   // e.g. "Patient/example-patient-001"
+  user      String   // e.g. "Dr. Rajesh Kumar"
+  status    String   // success | warning | error
+  details   String?
+  createdAt DateTime @default(now())
+}

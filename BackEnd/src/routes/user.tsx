@@ -13,6 +13,37 @@ const userRoute = new Hono<{
   };
 }>();
 
+userRoute.get("/me", async (c) => {
+  const prisma = new PrismaClient({ datasourceUrl: c.env.DATABASE_URL }).$extends(withAccelerate());
+
+  try {
+    // 👇 Get userId from middleware (set during auth)
+    const userId = c.get("userID");
+    if (!userId) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
+      return c.json({ error: "User not found" }, 404);
+    }
+
+    return c.json(user);
+  } catch (err) {
+    console.error("❌ Error fetching user:", err);
+    return c.json({ error: "Failed to fetch user" }, 500);
+  }
+});
+
 // Signup
 userRoute.post("/signup", async (c) => {
   console.log("Request received");
@@ -52,6 +83,8 @@ userRoute.post("/signup", async (c) => {
     return c.json({ error: "Something went wrong" }, 500);
   }
 });
+
+
 
 // Signin
 userRoute.post("/signin", async (c) => {
