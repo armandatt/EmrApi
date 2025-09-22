@@ -532,7 +532,7 @@ export function CodeSearch() {
                                     onChange={(e) =>
                                         setPatientDetails((p) => ({ ...p, gender: e.target.value }))
                                     }
-                                    className="px-3 py-2 bg-transparent border border-gray-700 rounded-lg"
+                                    className="px-3 py-2 bg-transparent border text-black border-gray-700 rounded-lg"
                                 >
                                     <option value="">Gender</option>
                                     <option value="male">Male</option>
